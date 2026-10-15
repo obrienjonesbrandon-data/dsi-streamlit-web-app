@@ -1,0 +1,48 @@
+
+
+#import libraries
+import streamlit as st
+import pandas as pd
+import joblib
+
+# load our model pipeline object
+model = joblib.load("model.joblib")
+
+# add title and instructions
+st.title("Purchase Prediction Model")
+st.subheader("Enter customer information and submit for likelihood to purchase")
+
+
+# age input form
+
+age = st.number_input(
+    label = "01. Enter the customer's age",
+    min_value = 18,
+    max_value = 120,
+    value = 35 ) #initial value
+
+# gender input form
+gender = st.radio(
+    label = "02. Select the customer's gender",
+    options = ["Male", "Female"])
+
+# credit score input form
+
+credit_score = st.number_input(
+    label = "03. Enter the customer's credit score",
+    min_value = 0,
+    max_value = 1000,
+    value = 500,
+    )
+
+#submit inputs to model
+if st.button("Submit for prediction"):
+    
+    inputs = pd.DataFrame({"age":[age], "gender":[gender], "credit_score":[credit_score]})
+    
+    #apply model pipeline to the input data and extract probability prediction
+    pred_proba = model.predict_proba(inputs)[0][1]
+    
+    #output prediction
+    #the notation for pred_proba makes it so that it will return a percentage with no decimal places
+    st.subheader(f"Based on these customer attributes, out model predicts a purchase probability of {pred_proba:.0%}")
